@@ -14,13 +14,23 @@ RUN echo "--- Install build dependencies ---" \
      gcc \
      musl-dev \
      pcre-dev \
-     openssl \
      openssl-dev \
      zlib-dev \
      ncurses-dev \
      readline-dev \
-     curl \
      perl \
+  && echo "--- Install runtime dependencies ---" \
+  && apk add \
+     bash \
+     curl \
+     libpcrecpp \
+     libpcre16 \
+     libpcre32 \
+     openssl \
+     libssl1.0 \
+     pcre \
+     libgcc \
+     libstdc++ \
   && readonly NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
   && mkdir -p /root/ngx_openresty \
   && cd /root/ngx_openresty \
@@ -53,7 +63,7 @@ RUN echo "--- Install build dependencies ---" \
   && ln -sf ${OPENRESTY_PREFIX}/luajit/bin/luajit-* ${OPENRESTY_PREFIX}/luajit/bin/lua \
   && ln -sf ${OPENRESTY_PREFIX}/luajit/bin/luajit-* /usr/local/bin/lua \
   && echo "--- Download LuaRocks ---" \
-  && curl -L http://keplerproject.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz | tar -xz \
+  && curl -L http://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz | tar -xz \
   && cd luarocks-* \
   && echo "--- Configure LuaRocks ---" \
   && ./configure \
@@ -76,18 +86,6 @@ RUN echo "--- Install build dependencies ---" \
      -out /etc/ssl/resty-auto-ssl-fallback.crt \
   && echo "--- Remove build dependencies ---" \
   && apk del build-deps \
-  && echo "--- Install runtime dependencies ---" \
-  && apk add \
-     bash \
-     curl \
-     libpcrecpp \
-     libpcre16 \
-     libpcre32 \
-     openssl \
-     libssl1.0 \
-     pcre \
-     libgcc \
-     libstdc++ \
   && echo "--- Cleanup ---" \
   && rm -rf /var/cache/apk/* \
   && rm -rf /root/ngx_openresty
