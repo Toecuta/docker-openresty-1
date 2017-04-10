@@ -84,6 +84,9 @@ RUN echo "--- Install build dependencies ---" \
      -subj '/CN=sni-support-required-for-valid-ssl' \
      -keyout /etc/ssl/resty-auto-ssl-fallback.key \
      -out /etc/ssl/resty-auto-ssl-fallback.crt \
+  && echo "--- Add group and user for OpenResty ---" \
+  && addgroup -S nginx \
+	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
   && echo "--- Remove build dependencies ---" \
   && apk del build-deps \
   && echo "--- Cleanup ---" \
@@ -94,5 +97,7 @@ WORKDIR ${NGINX_PREFIX}/
 
 RUN rm -rf conf/*
 COPY nginx ${NGINX_PREFIX}/
+
+EXPOSE 80 443
 
 CMD ["nginx", "-g", "daemon off; error_log /dev/stderr info;"]
